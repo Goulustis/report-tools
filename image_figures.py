@@ -71,11 +71,14 @@ def load_simple(img_f):
     return None, img
 
 
-def main(*args, load_fn = load_img, use_saved_pnts=False):
+def main(*args, load_fns = [load_img], use_saved_pnts=False):
     os.makedirs(SAVE_DIR, exist_ok=True)
+
+    if len(load_fns) == 1:
+        load_fns = load_fns*len(args)
     
-    gt, _ = load_fn(args[0])
-    preds = [load_fn(f)[1] for f in args]
+    gt, _ = load_fns[0](args[0])
+    preds = [load_fns[i](f)[1] for i,f in enumerate(args)]
 
     pnts_f = osp.join(SAVE_DIR, "pnts.npy")
     if use_saved_pnts:
@@ -112,9 +115,12 @@ def main(*args, load_fn = load_img, use_saved_pnts=False):
 if __name__ == "__main__":
 
     img_fs = [
-            "/ubc/cs/research/kmyi/matthew/projects/ed-nerf/outputs/black_seoul_b3_v3/double_constraint_powpow/2024-01-23_020637/eval_results/img/006.png"
+            "/ubc/cs/research/kmyi/matthew/projects/ed-nerf/outputs/black_seoul_b3_v3_rect/clear_gamma_log_loss_identity_evone_gt_evMap-powpow_co_map_evs_emb/2024-02-28_211335_eval/2024-02-28_211335/eval_results/img/014.png",
+            "/ubc/cs/research/kmyi/matthew/projects/E2NeRF/logs/real-world/black_seoul_b3_v3/evs/testset_206000/014.png",
+            # "/ubc/cs/research/kmyi/matthew/projects/ed-nerf/outputs/black_seoul_b3_v3_rect/clear_gamma_log_loss_identity_evone_gt_evMap-powpow_co_map_evs_emb/2024-02-28_211335_eval/2024-02-28_211335/eval_results/linear/014.png",
             ]
 
 
 
-    main(*img_fs, load_fn=load_img, use_saved_pnts=False)
+    # main(*img_fs, load_fns=[load_img, load_img, load_img], use_saved_pnts=False)
+    main(*img_fs, load_fns=[load_img, load_simple, load_simple], use_saved_pnts=False)
